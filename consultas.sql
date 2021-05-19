@@ -33,5 +33,9 @@ WHERE descripcion <> 'no disponible';
 
 /*
 Obtener el título de los últimos 3 libros escritos por el autor con id 2.
+*/
+SELECT autor_id ,titulo, fecha_publicacion FROM libros 
+WHERE autor_id = 2 ORDER BY fecha_publicacion DESC LIMIT 3;
 
+/*
 Obtener en un mismo resultado la cantidad de libros escritos por autores con seudónimo y sin seudónimo./
