@@ -28,7 +28,8 @@ WHERE fecha_publicacion < '2000-01-01';
 /*
 Obtener la llave primaria de todos los libros cuya descripción sea diferente de no disponible.
 */
-
+SELECT libro_id, titulo, descripcion FROM libros
+WHERE descripcion <> 'no disponible';
 
 /*
 Obtener el título de los últimos 3 libros escritos por el autor con id 2.
