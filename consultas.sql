@@ -70,25 +70,39 @@ SELECT titulo, ventas FROM libros ORDER BY ventas DESC LIMIT 5;
 /*
 Obtener el título y el número de ventas de los cinco libros más vendidos de la última década.
 */
-
+SELECT titulo, ventas, fecha_publicacion FROM libros 
+WHERE fecha_publicacion > (CURRENT_TIMESTAMP - INTERVAL 10 YEAR) ORDER BY ventas DESC;
 
 /*
 Obtener la cantidad de libros vendidos por los autores con id 1, 2 y 3.
 */
-SELECT autor_id, COUNT(ventas) AS total_ventas FROM libros GROUP BY autor_id;
+SELECT autor_id, SUM(ventas) AS total_ventas FROM libros GROUP BY autor_id;
 
 /*
 Obtener el título del libro con más páginas.
 */
-SELECT titulo, MAX(ventas) FROM libros;
+SELECT titulo, paginas FROM libros ORDER BY paginas DESC LIMIT 1;
 
 /*
 Obtener todos los libros cuyo título comience con la palabra “La”.
+*/
+SELECT titulo FROM libros WHERE titulo LIKE 'La%';
 
+/*
 Obtener todos los libros cuyo título comience con la palabra “La” y termine con la letra “a”.
+*/
+SELECT titulo FROM libros WHERE titulo LIKE 'La%' AND titulo LIKE '%a';
 
+/*
 Establecer el stock en cero a todos los libros publicados antes del año de 1995
+*/
+UPDATE libros SET stock = 0 WHERE fecha_publicacion < '1995-01-01';
 
+/*
 Mostrar el mensaje Disponible si el libro con id 1 posee más de 5 ejemplares en stock, en caso contrario mostrar el mensaje No disponible.
+*/
+SELECT IF (stock > 5, 'Disponible', 'No disponible') AS mensaje FROM libros WHERE libro_id = 1;
 
+/*
 Obtener el título los libros ordenador por fecha de publicación del más reciente al más viejo.*/
+SELECT libro_id, titulo, fecha_publicacion FROM libros ORDER BY fecha_publicacion DESC;
