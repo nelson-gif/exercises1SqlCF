@@ -39,3 +39,56 @@ WHERE autor_id = 2 ORDER BY fecha_publicacion DESC LIMIT 3;
 
 /*
 Obtener en un mismo resultado la cantidad de libros escritos por autores con seudónimo y sin seudónimo./
+*/
+/* PARA ENTENDERLE MEJOR
+SET @con_seudonimo = (SELECT count(titulo) AS con_seudonimo FROM libros 
+WHERE autor_id IN (SELECT autor_id FROM autores WHERE seudonimo IS NOT NULL));
+
+SET @sin_seudonimo = (SELECT count(titulo) AS con_seudonimo FROM libros 
+WHERE autor_id IN (SELECT autor_id FROM autores WHERE seudonimo IS NULL));
+
+SELECT @con_seudonimo AS con_seudonimo, @sin_seudonimo AS sin_seudonimo;
+*/
+SELECT (SELECT COUNT(titulo) AS con_seudonimo FROM libros 
+        WHERE autor_id IN (SELECT autor_id FROM autores WHERE seudonimo IS NOT NULL)) 
+AS con_seudonimo,
+        (SELECT COUNT(titulo) AS con_seudonimo FROM libros 
+        WHERE autor_id IN (SELECT autor_id FROM autores WHERE seudonimo IS NULL)) 
+AS sin_seudonimo;
+
+/*
+Obtener la cantidad de libros publicados entre enero del año 2000 y enero del año 2005.
+*/
+SELECT COUNT(titulo) AS books_between FROM libros
+WHERE fecha_publicacion BETWEEN '2000-01-01' AND '2005-01-01';
+
+/*
+Obtener el título y el número de ventas de los cinco libros más vendidos.
+*/
+SELECT titulo, ventas FROM libros ORDER BY ventas DESC LIMIT 5;
+
+/*
+Obtener el título y el número de ventas de los cinco libros más vendidos de la última década.
+*/
+
+
+/*
+Obtener la cantidad de libros vendidos por los autores con id 1, 2 y 3.
+*/
+SELECT autor_id, COUNT(ventas) AS total_ventas FROM libros GROUP BY autor_id;
+
+/*
+Obtener el título del libro con más páginas.
+*/
+SELECT titulo, MAX(ventas) FROM libros;
+
+/*
+Obtener todos los libros cuyo título comience con la palabra “La”.
+
+Obtener todos los libros cuyo título comience con la palabra “La” y termine con la letra “a”.
+
+Establecer el stock en cero a todos los libros publicados antes del año de 1995
+
+Mostrar el mensaje Disponible si el libro con id 1 posee más de 5 ejemplares en stock, en caso contrario mostrar el mensaje No disponible.
+
+Obtener el título los libros ordenador por fecha de publicación del más reciente al más viejo.*/
