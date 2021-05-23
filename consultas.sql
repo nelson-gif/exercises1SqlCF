@@ -96,13 +96,63 @@ SELECT titulo FROM libros WHERE titulo LIKE 'La%' AND titulo LIKE '%a';
 /*
 Establecer el stock en cero a todos los libros publicados antes del año de 1995
 */
-UPDATE libros SET stock = 0 WHERE fecha_publicacion < '1995-01-01';
+UPDATE libros SET stock = 0 WHERE YEAR(fecha_publicacion) < 1995;
 
 /*
 Mostrar el mensaje Disponible si el libro con id 1 posee más de 5 ejemplares en stock, en caso contrario mostrar el mensaje No disponible.
 */
 SELECT IF (stock > 5, 'Disponible', 'No disponible') AS mensaje FROM libros WHERE libro_id = 1;
-
 /*
 Obtener el título los libros ordenador por fecha de publicación del más reciente al más viejo.*/
 SELECT libro_id, titulo, fecha_publicacion FROM libros ORDER BY fecha_publicacion DESC;
+
+/*
+AUTORES
+Obtener el nombre de los autores cuya fecha de nacimiento sea posterior a 1950
+*/
+SELECT nombre, fecha_nacimiento FROM autores WHERE YEAR(fecha_nacimiento) > 1950;
+
+/*
+Obtener la el nombre completo y la edad de todos los autores.
+*/
+SELECT CONCAT(nombre, ' ', apellido) AS nombreCompleto, 
+(YEAR(CURRENT_TIMESTAMP) - YEAR(fecha_nacimiento)) AS edad
+FROM autores;
+
+/*
+Obtener el nombre completo de todos los autores cuyo último libro publicado sea posterior al 2005
+*/
+SELECT CONCAT(autores.nombre, ' ', autores.apellido) AS nombreCompleto,
+MAX(libros.fecha_publicacion) AS ultima_publicacion FROM autores, libros
+WHERE autores.autor_id = libros.autor_id 
+AND YEAR(fecha_publicacion) > 2005 GROUP BY nombreCompleto;
+/*
+Obtener el id de todos los escritores cuyas ventas en sus libros superen el promedio.
+*/
+SELECT autor_id AS id, AVG(ventas) AS promedio FROM libros 
+GROUP BY id HAVING promedio > (SELECT AVG(ventas) FROM libros);
+
+/*
+Obtener el id de todos los escritores cuyas ventas en sus libros sean mayores a cien mil ejemplares.
+*/
+SELECT autor_id, SUM(ventas) AS totalVentas FROM libros 
+GROUP BY autor_id HAVING totalVentas > 100000;
+
+/*
+FUNCIONES
+Crear una función la cual nos permita saber si un libro es candidato a préstamo o no. Retornar “Disponible” si el libro posee por lo menos un ejemplar en stock, en caso contrario retornar “No disponible.”
+*/
+
+/* sentencia para que se pueda ejecutar una funcion si no se añade DETERMINIST, NO SQL ó READS SQL DATA antes del begin
+SET GLOBAL log_bin_trust_function_creators = 1;*/
+DELIMITER //
+
+CREATE FUNCTION bookStatus(id INT)
+RETURNS VARCHAR(20)
+BEGIN
+   SET @stock = (SELECT stock FROM libros WHERE libro_id = id);
+   SET @answer = (CASE WHEN @stock > 1 THEN 'Disponible' ELSE 'No disponible' END);
+   RETURN @answer;
+END //
+
+DELIMITER ;
